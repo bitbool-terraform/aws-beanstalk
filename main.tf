@@ -6,6 +6,8 @@ data "aws_caller_identity" "current" {}
 
 data "aws_elastic_beanstalk_hosted_zone" "app" {}
 
+data "aws_region" "current" {}
+
 resource "aws_elastic_beanstalk_environment" "app" {
 
   name                   = format("%s-%s-%s",var.project,var.systemenv,var.name)
@@ -223,7 +225,7 @@ resource "aws_elastic_beanstalk_environment" "app" {
   setting {
     namespace = "aws:elbv2:listenerrule:app"
     name      = "HostHeaders"
-    value     = format("%s-%s-%s.%s.elasticbeanstalk.com",var.project,var.systemenv,var.name,var.aws_region)
+    value     = format("%s-%s-%s.%s.elasticbeanstalk.com",var.project,var.systemenv,var.name,data.aws_region.current.name)
     resource  = ""
   }
 
@@ -256,14 +258,14 @@ resource "aws_elastic_beanstalk_environment" "app" {
   setting {
     namespace = "aws:elasticbeanstalk:application"
     name      = "Application Healthcheck URL"
-    value     = "/health"
+    value     = try(var.settings.healthCheckUrl,"/")
     resource  = ""
   }
 
   setting {
     namespace = "aws:elasticbeanstalk:environment:process:default"
     name      = "HealthCheckPath"
-    value     = "/health"
+    value     = try(var.settings.healthCheckUrl,"/")
     resource  = ""
   }
 
