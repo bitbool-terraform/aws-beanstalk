@@ -5,6 +5,8 @@ variable "name" { type = string }
 variable "beanstalk_app" { type = string }
 variable "beanstalk_stack" { type = string }
 
+variable "beanstalk_role_policies_arns" { default = {} }
+
 ## Explicit Settings
 variable "root_key_id" { type = string }
 variable "securityGroupIds" { 

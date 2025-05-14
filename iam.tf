@@ -255,6 +255,11 @@ resource "aws_iam_policy" "beanstalk_env" {
 
 }
 
+resource "aws_iam_role_policy_attachment" "beanstalk_policies" {
+   for_each = var.beanstalk_role_policies_arns
 
+  role       = aws_iam_role.beanstalk_env.name
+  policy_arn = each.value
+}
 
 
