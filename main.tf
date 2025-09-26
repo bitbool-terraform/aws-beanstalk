@@ -10,24 +10,18 @@ data "aws_region" "current" {}
 
 resource "aws_elastic_beanstalk_environment" "app" {
 
-  name                   = format("%s-%s-%s",var.project,var.systemenv,var.name)
+  name                   = format(var.name)
   tier                   = "WebServer"
-  cname_prefix           = format("%s-%s-%s",var.project,var.systemenv,var.name)
+  cname_prefix           = format(var.name)
 
   application            = var.beanstalk_app #data.aws_elastic_beanstalk_application.apps["bid"].name
   solution_stack_name    = var.beanstalk_stack
 
   wait_for_ready_timeout = "600s"
 
-  tags = merge( { "AppName" = var.name, "BeanstalkEnv" = var.systemenv }, local.tags_module )
+  tags = merge( { "AppName" = var.application, "BeanstalkEnv" = var.systemenv }, local.tags_module )
 
 #Envvars
-  setting {
-    namespace = "aws:elasticbeanstalk:application:environment"
-    name      = "APPLICATION"
-    value     = var.name
-    resource  = ""
-  }
 
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
@@ -38,10 +32,25 @@ resource "aws_elastic_beanstalk_environment" "app" {
 
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
+    name      = "APPLICATION"
+    value     = var.application
+    resource  = ""
+  }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:application:environment"
+    name      = "SERVICE"
+    value     = var.service
+    resource  = ""
+  }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:application:environment"
     name      = "SYSTEMENV"
     value     = var.systemenv
     resource  = ""
   }
+
 
   dynamic "setting" {
     for_each = try(var.extra_env,{})
@@ -110,6 +119,16 @@ resource "aws_elastic_beanstalk_environment" "app" {
     name      = "ELBSubnets"
     value     = var.ELBSubnets #join(",",sort(local.subnet_ids_public)) 
     resource  = ""
+  }
+
+  dynamic "setting" {
+    for_each = var.internalBalancer ? [] : ["internal"] 
+    content {
+      namespace = "aws:ec2:vpc"
+      name      = "ELBScheme"
+      value     = "internal"
+      resource  = ""
+    }
   }
 
   setting {
@@ -192,6 +211,15 @@ resource "aws_elastic_beanstalk_environment" "app" {
     }
   }
 
+  dynamic "setting" {
+    for_each = var.sharedBalancer ? [] : ["shared"] 
+    content {
+      namespace = "aws:elbv2:loadbalancer"
+      name      = "IdleTimeout"
+      value     = try(var.settings.IdleTimeout,600)
+      resource  = ""
+    }
+  }
 
 #SHARED BALANCER
   dynamic "setting" {
@@ -222,11 +250,14 @@ resource "aws_elastic_beanstalk_environment" "app" {
     resource  = ""
   }
 
-  setting {
-    namespace = "aws:elbv2:listenerrule:app"
-    name      = "HostHeaders"
-    value     = format("%s-%s-%s.%s.elasticbeanstalk.com",var.project,var.systemenv,var.name,data.aws_region.current.name)
-    resource  = ""
+  dynamic "setting" {
+    for_each = var.sharedBalancer ? ["shared"] : []
+    content {
+      namespace = "aws:elbv2:listenerrule:app"
+      name      = "HostHeaders"
+      value     = length(var.aliases) > 0 ? join(",",var.aliases) : format("%s.%s.elasticbeanstalk.com",var.name,data.aws_region.current.name)
+      resource  = ""
+    }
   }
 
   setting {

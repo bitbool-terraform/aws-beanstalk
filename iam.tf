@@ -21,12 +21,12 @@ data "aws_iam_policy_document" "role_assumable_by_beanstalk" {
 }
 
 resource "aws_iam_instance_profile" "beanstalk_env" {
-  name  = format("%s-%s-%s-beanstalk_env",var.project,var.systemenv,var.name)
+  name  = format("%s-beanstalk_env",var.name)
   role = aws_iam_role.beanstalk_env.name
 }
 
 resource "aws_iam_role" "beanstalk_env" {
-  name               = format("%s-%s-%s-beanstalk_env",var.project,var.systemenv,var.name)
+  name               = format("%s-beanstalk_env",var.name)
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.role_assumable_by_ec2.json
 }
@@ -44,7 +44,7 @@ resource "aws_iam_role_policy_attachment" "beanstalk_env_ssmcore" {
 
 
 # resource "aws_iam_policy" "application_access" {
-#   name   = format("%s-%s-%s-beanstalk-appaccess",var.project,var.systemenv,var.name)
+#   name   = format("%s-beanstalk-appaccess",var.name)
 #   path   = "/"
 #   policy = jsonencode({
 #       "Version": "2012-10-17",
@@ -101,7 +101,7 @@ resource "aws_iam_role_policy_attachment" "beanstalk_env_ssmcore" {
 
 
 # resource "aws_iam_policy" "dbiam" {
-#   name   = format("%s-%s-%s-beanstalk_dbiam",var.project,var.systemenv,var.name)
+#   name   = format("%s-beanstalk_dbiam",var.name)
 #   path   = "/"
 
   
@@ -127,7 +127,7 @@ resource "aws_iam_role_policy_attachment" "beanstalk_env_main" {
 }
 
 resource "aws_iam_policy" "beanstalk_env" {
-  name   = format("%s-%s-%s-beanstalk_systemaccess",var.project,var.systemenv,var.name)
+  name   = format("%s-beanstalk_systemaccess",var.name)
   path   = "/"
   policy = jsonencode({
       "Version": "2012-10-17",

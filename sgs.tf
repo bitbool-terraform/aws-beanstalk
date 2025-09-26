@@ -1,14 +1,14 @@
 
 resource "aws_security_group" "servers" {
-  name        = format("%s-%s-%s-appservers",var.project,var.systemenv,var.name)
+  name        = format("%s-appservers",var.name)
   description = "App Servers"
   vpc_id      = var.vpc_id
 
-  tags = merge( {Name = format("%s-%s-%s-beanservers",var.project,var.systemenv,var.name) }, local.tags_module )
+  tags = merge( {Name = format("%s-beanservers",var.name) }, local.tags_module )
 }
 
 resource "aws_security_group" "access" {
-  name        = format("%s-%s-%s-appaccess",var.project,var.systemenv,var.name)
+  name        = format("%s-appaccess",var.name)
   description = "Allow traffic to application"
   vpc_id      = var.vpc_id
 
@@ -42,6 +42,6 @@ resource "aws_security_group" "access" {
     }
   }  
 
-  tags = merge( {Name = format("%s-%s-%s-appaccess",var.project,var.systemenv,var.name) }, local.tags_module )
+  tags = merge( {Name = format("%s-appaccess",var.name) }, local.tags_module )
 }
 

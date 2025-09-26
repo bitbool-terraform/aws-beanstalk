@@ -1,5 +1,8 @@
 variable "project" { type = string }
+variable "application" { type = string }
 variable "systemenv" { type = string }
+variable "service" { default = "app"}
+
 variable "name" { type = string }
 
 variable "beanstalk_app" { type = string }
@@ -32,6 +35,11 @@ variable "sharedBalancer" {
   type = bool
   default = false 
 }
+variable "internalBalancer" { 
+  type = bool
+  default = false 
+}
+
 variable "SharedLoadBalancerArn" { 
   type = string
   default = "" 
@@ -77,9 +85,15 @@ variable "netAdminAccess" {
   type = list
   default = [] 
 }
+
 variable "netAllowOutgoing" { 
   type = bool
   default = true  
 }
 
+
+variable "aliases" { 
+  type = list
+  default = []  
+}
 
