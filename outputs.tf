@@ -13,3 +13,7 @@ output "load_balancers" {
 output "endpoint_url" {
   value = aws_elastic_beanstalk_environment.app.endpoint_url
 }
+
+output "beanenv_cname" {
+  value = aws_elastic_beanstalk_environment.app.cname
+}
