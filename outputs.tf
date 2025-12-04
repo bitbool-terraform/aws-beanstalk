@@ -17,3 +17,12 @@ output "endpoint_url" {
 output "beanenv_cname" {
   value = aws_elastic_beanstalk_environment.app.cname
 }
+
+
+output "autoscaling_groups" {
+  value = aws_elastic_beanstalk_environment.app.autoscaling_groups
+}
+
+output "ec2instances" {
+  value = aws_elastic_beanstalk_environment.app.instances
+}
