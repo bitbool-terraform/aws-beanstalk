@@ -4,7 +4,7 @@ resource "aws_security_group" "servers" {
   description = "App Servers"
   vpc_id      = var.vpc_id
 
-  tags = merge( {Name = format("%s-beanservers",var.name) }, local.tags_module )
+  tags = merge( {Name = format("%s-beanservers",var.name) }, local.tags_module, var.tags )
 }
 
 resource "aws_security_group" "access" {
@@ -42,6 +42,6 @@ resource "aws_security_group" "access" {
     }
   }  
 
-  tags = merge( {Name = format("%s-appaccess",var.name) }, local.tags_module )
+  tags = merge( {Name = format("%s-appaccess",var.name) }, local.tags_module, var.tags )
 }
 

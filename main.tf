@@ -19,7 +19,7 @@ resource "aws_elastic_beanstalk_environment" "app" {
 
   wait_for_ready_timeout = "600s"
 
-  tags = merge( { "AppName" = var.application, "BeanstalkEnv" = var.systemenv }, local.tags_module )
+  tags = merge( { "AppName" = var.application, "BeanstalkEnv" = var.systemenv }, local.tags_module , var.tags)
 
 #Envvars
 

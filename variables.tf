@@ -97,3 +97,4 @@ variable "aliases" {
   default = []  
 }
 
+variable "tags" { default = {} } 
